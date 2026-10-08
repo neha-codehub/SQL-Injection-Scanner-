@@ -1,11 +1,10 @@
 import requests
 import csv
+import os
 from datetime import datetime
-from colorama import Fore, init
 
-init(autoreset=True)
 
-error_patterns = [
+ERROR_PATTERNS = [
     "sql syntax",
     "mysql",
     "warning",
@@ -15,71 +14,115 @@ error_patterns = [
     "sqlite"
 ]
 
-payloads = [
+PAYLOADS = [
     "'",
     '"'
 ]
 
-url = input("Enter target URL (with parameter): ")
 
-print(Fore.CYAN + "\nStarting SQL Injection Detection...\n")
+def scan_url(url):
+    """
+    Scan a permitted target URL for basic SQL error indicators.
+    Returns scan results for the web interface.
+    """
 
-results = []
+    results = []
+    logs = []
 
-for payload in payloads:
+    if not url:
+        return {
+            "success": False,
+            "error": "Target URL is required.",
+            "results": [],
+            "logs": []
+        }
 
-    test_url = url + payload
+    url = url.strip()
 
-    try:
-        response = requests.get(test_url, timeout=5)
+    logs.append(f"> Target received: {url}")
+    logs.append("> Initializing SQL injection detection...")
+    logs.append(f"> Payloads loaded: {len(PAYLOADS)}")
 
-        found = False
+    for payload in PAYLOADS:
 
-        for pattern in error_patterns:
+        test_url = url + payload
 
-            if pattern.lower() in response.text.lower():
+        logs.append(f"> Testing payload: {repr(payload)}")
 
-                print(Fore.RED + "[!] Possible SQL Error Detected")
-                print(Fore.YELLOW + f"URL: {test_url}")
-                print(Fore.GREEN + f"Matched Pattern: {pattern}\n")
+        try:
+            response = requests.get(
+                test_url,
+                timeout=5
+            )
 
-                results.append([
-                    test_url,
-                    payload,
-                    pattern
-                ])
+            logs.append(
+                f"> HTTP response received: {response.status_code}"
+            )
 
-                found = True
-                break
+            found = False
 
-        if not found:
-            print(Fore.GREEN + f"[SAFE] {test_url}")
+            for pattern in ERROR_PATTERNS:
 
-    except Exception as e:
-        print(Fore.RED + f"Request Error: {e}")
+                if pattern.lower() in response.text.lower():
 
-# Summary
-print("\n" + "=" * 50)
-print("SCAN SUMMARY")
-print("=" * 50)
+                    logs.append(
+                        f"> SQL error pattern detected: {pattern}"
+                    )
 
-print(f"Payloads Tested : {len(payloads)}")
-print(f"Issues Found    : {len(results)}")
+                    results.append({
+                        "url": test_url,
+                        "payload": payload,
+                        "pattern": pattern
+                    })
 
-# CSV Report
-filename = f"scan_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+                    found = True
+                    break
 
-with open(filename, "w", newline="", encoding="utf-8") as file:
+            if not found:
+                logs.append("> No SQL error pattern detected.")
 
-    writer = csv.writer(file)
+        except requests.RequestException as e:
 
-    writer.writerow([
-        "URL",
-        "Payload",
-        "Matched Pattern"
-    ])
+            logs.append(f"> Request error: {str(e)}")
 
-    writer.writerows(results)
+    # Create reports directory
+    os.makedirs("reports", exist_ok=True)
 
-print(f"\nReport Saved: {filename}")
-print("=" * 50)
+    filename = (
+        f"reports/scan_report_"
+        f"{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    )
+
+    with open(
+        filename,
+        "w",
+        newline="",
+        encoding="utf-8"
+    ) as file:
+
+        writer = csv.writer(file)
+
+        writer.writerow([
+            "URL",
+            "Payload",
+            "Matched Pattern"
+        ])
+
+        for result in results:
+            writer.writerow([
+                result["url"],
+                result["payload"],
+                result["pattern"]
+            ])
+
+    logs.append("> Scan completed.")
+    logs.append(f"> Report saved: {filename}")
+
+    return {
+        "success": True,
+        "results": results,
+        "logs": logs,
+        "payloads_tested": len(PAYLOADS),
+        "issues_found": len(results),
+        "report": filename
+    }

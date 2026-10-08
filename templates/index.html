@@ -1,0 +1,266 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SQL Vulnerability Scanner</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <header>
+
+        <div class="logo">
+            <span class="green">></span>
+            SQL<span class="cyan">_</span>SCANNER
+        </div>
+
+        <div class="status">
+            <span class="status-dot"></span>
+            SYSTEM ONLINE
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <!-- HERO -->
+        <section class="hero">
+
+            <p class="terminal-label">
+                // AUTHORIZED SECURITY TESTING ONLY
+            </p>
+
+            <h1>
+                SQL Vulnerability
+                <span>Scanner</span>
+            </h1>
+
+            <p class="description">
+                Detect common SQL error indicators through controlled
+                security testing.
+            </p>
+
+        </section>
+
+
+        <!-- SCAN PANEL -->
+        <section class="scan-panel">
+
+            <div class="panel-title">
+                <span>[ TARGET CONFIGURATION ]</span>
+            </div>
+
+
+            <!-- IMPORTANT: POST /scan -->
+            <form
+                id="scanForm"
+                method="POST"
+                action="/scan"
+                autocomplete="off"
+            >
+
+                <label for="url">
+                    TARGET URL
+                </label>
+
+
+                <div class="input-container">
+
+                    <span class="prefix">
+                        TARGET://
+                    </span>
+
+                    <input
+                        type="text"
+                        id="url"
+                        name="url"
+                        placeholder="http://127.0.0.1:5000/product?id=1"
+                        autocomplete="off"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    id="scanButton"
+                >
+                    <span>▶</span>
+                    START SCAN
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- STATISTICS -->
+        <section class="stats">
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    PAYLOADS TESTED
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="payloadCount"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    ISSUES FOUND
+                </div>
+
+                <div
+                    class="stat-value danger"
+                    id="issueCount"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    SCAN STATUS
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="scanStatus"
+                >
+                    IDLE
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- TERMINAL -->
+        <section class="terminal-panel">
+
+            <div class="terminal-header">
+
+                <div>
+
+                    <span class="terminal-dot red"></span>
+
+                    <span class="terminal-dot yellow"></span>
+
+                    <span class="terminal-dot green-dot"></span>
+
+                </div>
+
+                <span>
+                    scanner@security-terminal
+                </span>
+
+            </div>
+
+
+            <div
+                id="terminalOutput"
+                class="terminal-output"
+            >
+
+                <p>
+
+                    <span class="prompt">
+                        root@scanner:~$
+                    </span>
+
+                    Waiting for scan...
+
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- RESULTS -->
+        <section class="results-panel">
+
+            <div class="panel-title">
+                <span>[ SCAN RESULTS ]</span>
+            </div>
+
+
+            <div id="results">
+
+                <div class="no-results">
+                    No scan results yet.
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- REPORT -->
+        <section
+            id="reportSection"
+            class="report-section"
+        >
+
+            <a
+                id="downloadReport"
+                class="download-button"
+                href="#"
+            >
+                ↓ DOWNLOAD CSV REPORT
+            </a>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+        <p>
+
+            SQL Vulnerability Scanner
+
+            <span>•</span>
+
+            Authorized Testing Environment
+
+        </p>
+
+    </footer>
+
+</div>
+
+
+<!-- JAVASCRIPT -->
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
+```

@@ -1,0 +1,3 @@
+URL,Payload,Matched Pattern
+http://127.0.0.1:5000/product?id=1',',sql syntax
+"http://127.0.0.1:5000/product?id=1""","""",sql syntax
